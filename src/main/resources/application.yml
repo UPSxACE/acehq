@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: acehq
+  datasource:
+    url: "jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:acehq}_dev"
+    username: "${DATABASE_USERNAME:postgres}"
+    password: "${DATABASE_PASSWORD:postgres}"
+app:
+  frontend-url: "${FRONTEND_URL:localhost:3000}"
+clerk:
+  secret: "${CLERK_SECRET_KEY}"
+  authorized-party: "${CLERK_AUTHORIZED_PARTY:#{'http://localhost:3000'}}"

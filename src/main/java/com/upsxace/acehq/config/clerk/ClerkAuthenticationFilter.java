@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -55,12 +53,12 @@ public class ClerkAuthenticationFilter extends OncePerRequestFilter {
         }
 
         var claims = requestState.claims().get();
+        var id = Optional.ofNullable(claims.get("id", String.class))
+                .map(UUID::fromString)
+                .orElse(null);
+        var authorities = claims.get("authorities", String.class);
 
-        var publicMetadata = claims.get("public_metadata", PublicMetadata.class);
-        var id = publicMetadata != null ? publicMetadata.getId() : null;
-        var authorities = publicMetadata != null ? AuthorityUtils.commaSeparatedStringToAuthorityList(publicMetadata.getAuthorities()) : null;
-
-        var userContext = new UserContext(id, authorities);
+        var userContext = new UserContext(id, claims.getSubject(), AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
 
         var authentication = new UsernamePasswordAuthenticationToken(
                 userContext,

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,7 +37,7 @@ public class PostControllerV1 {
     public ResponseEntity<PostDto> getPost(
             @PathVariable UUID id
     ){
-        return ResponseEntity.ok(postService.userGetById(id));
+        return ResponseEntity.ok(postService.getById(id));
     }
 
     @DeleteMapping("/{id}")
@@ -61,5 +62,10 @@ public class PostControllerV1 {
     ){
         postService.userDislikePost(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PostDto>> getPosts(){
+        return ResponseEntity.ok(postService.getAll());
     }
 }

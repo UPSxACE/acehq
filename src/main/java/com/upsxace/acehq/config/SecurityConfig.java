@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,8 +61,10 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests(registry -> registry
-                .requestMatchers("/v1/profiles/me").permitAll()
-                .requestMatchers("/v1/profiles/complete-profile").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/profiles/me").permitAll()
+                .requestMatchers(HttpMethod.POST, "/v1/profiles/complete-profile").authenticated()
+                .requestMatchers(HttpMethod.GET, "/v1/posts").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/posts/{id}").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
         );
 

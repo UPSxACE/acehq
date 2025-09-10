@@ -3,6 +3,7 @@ package com.upsxace.acehq.config.clerk;
 import com.clerk.backend_api.helpers.security.AuthenticateRequest;
 import com.clerk.backend_api.helpers.security.models.AuthenticateRequestOptions;
 import com.clerk.backend_api.helpers.security.models.RequestState;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,15 @@ public class ClerkAuthenticationFilter extends OncePerRequestFilter {
     private String clerkSecret;
     @Value("${clerk.authorized-party}")
     private String clerkAuthorizedParty;
+    @Value("${clerk.jwt-encoded}")
+    private String clerkJwtEncoded;
+
+    private String jwtKey;
+
+    @PostConstruct
+    private void init() {
+        jwtKey = new String(Base64.getDecoder().decode(clerkJwtEncoded));
+    }
 
     private Map<String, List<String>> getHeaders(HttpServletRequest request) {
         var headerNames = request.getHeaderNames();
@@ -43,7 +53,7 @@ public class ClerkAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         RequestState requestState = AuthenticateRequest.authenticateRequest(getHeaders(request), AuthenticateRequestOptions
-                .secretKey(clerkSecret)
+                .jwtKey(jwtKey)
                 .authorizedParty(clerkAuthorizedParty)
                 .build());
 

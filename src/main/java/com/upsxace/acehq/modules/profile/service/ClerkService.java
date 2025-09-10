@@ -20,7 +20,7 @@ public class ClerkService {
     private Clerk sdk;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         this.sdk = Clerk.builder()
                 .bearerAuth(clerkSecret)
                 .build();

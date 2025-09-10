@@ -11,3 +11,4 @@ app:
 clerk:
   secret: "${CLERK_SECRET_KEY}"
   authorized-party: "${CLERK_AUTHORIZED_PARTY:#{'http://localhost:3000'}}"
+  jwt-encoded: "${CLERK_JWT_ENCODED}"

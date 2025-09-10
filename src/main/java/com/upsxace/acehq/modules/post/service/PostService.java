@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,10 +34,14 @@ public class PostService {
         return postMapper.toDto(post);
     }
 
-    public PostDto userGetById(UUID id){
-        var userId = userService.getUserId().orElseThrow(IllegalStateException::new);
-        var details = postRepository.findByIdAndDeletedAtIsNullWithDetails(id, userId).orElseThrow(NotFoundException::new);
-        return postMapper.toDetailedDto(details);
+    public PostDto getById(UUID id){
+        var userId = userService.getUserId().orElse(null);
+        if(userId == null) {
+            var post = postRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(NotFoundException::new);
+            return postMapper.toDto(post);
+        }
+        var postDetailed = postRepository.findByIdAndProfileIdAndDeletedAtIsNullWithDetails(id, userId).orElseThrow(NotFoundException::new);
+        return postMapper.toDetailedDto(postDetailed);
     }
 
     @Transactional
@@ -70,5 +75,13 @@ public class PostService {
                     postRepository.save(post);
                     postLikeRepository.delete(postLike);
                 });
+    }
+
+    public List<PostDto> getAll(){
+        var userId = userService.getUserId().orElse(null);
+        if(userId == null){
+            return postMapper.toDtos(postRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc());
+        }
+        return postMapper.toDetailedDtos(postRepository.findAllByProfileIdAndDeletedAtIsNullOrderByCreatedAtDescWithDetails(userId));
     }
 }

@@ -1,4 +1,4 @@
-package com.upsxace.acehq.modules.profile.controller.v1;
+package com.upsxace.acehq.modules.profile.controller;
 
 import com.upsxace.acehq.modules.profile.dto.MeDto;
 import com.upsxace.acehq.modules.profile.dto.ProfileDto;

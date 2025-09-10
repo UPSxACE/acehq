@@ -1,6 +1,8 @@
-package com.upsxace.acehq.modules.post;
+package com.upsxace.acehq.modules.post.controller;
 
+import com.upsxace.acehq.modules.post.dto.PostDto;
 import com.upsxace.acehq.modules.post.dto.PublishPostRequest;
+import com.upsxace.acehq.modules.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +36,7 @@ public class PostControllerV1 {
     public ResponseEntity<PostDto> getPost(
             @PathVariable UUID id
     ){
-        return ResponseEntity.ok(postService.getById(id));
+        return ResponseEntity.ok(postService.userGetById(id));
     }
 
     @DeleteMapping("/{id}")
@@ -42,6 +44,22 @@ public class PostControllerV1 {
             @PathVariable UUID id
     ){
         postService.userDeleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> likePost(
+            @PathVariable UUID id
+    ){
+        postService.userLikePost(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/dislike")
+    public ResponseEntity<Void> dislikePost(
+            @PathVariable UUID id
+    ){
+        postService.userDislikePost(id);
         return ResponseEntity.noContent().build();
     }
 }

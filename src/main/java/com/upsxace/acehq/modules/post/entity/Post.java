@@ -1,4 +1,4 @@
-package com.upsxace.acehq.modules.post;
+package com.upsxace.acehq.modules.post.entity;
 
 import com.upsxace.acehq.modules.common.AuditableEntity;
 import com.upsxace.acehq.modules.profile.entity.Profile;

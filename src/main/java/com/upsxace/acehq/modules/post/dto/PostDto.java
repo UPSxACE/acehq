@@ -1,5 +1,6 @@
-package com.upsxace.acehq.modules.post;
+package com.upsxace.acehq.modules.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.upsxace.acehq.modules.profile.dto.ProfileDto;
 import lombok.Data;
 
@@ -15,4 +16,7 @@ public class PostDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final ProfileDto profile;
+    // details
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean liked;
 }

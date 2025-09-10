@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,12 @@ public class UserService {
         if (userCtx == null || userCtx.getId() == null) return Optional.empty();
         var profile = profileRepository.findById(userCtx.getId()).orElseThrow(IllegalStateException::new);
         return Optional.of(profile);
+    }
+
+    public Optional<UUID> getUserId(){
+        var userCtx = getUserContext().orElse(null);
+        if (userCtx == null) return Optional.empty();
+        return Optional.ofNullable(userCtx.getId());
     }
 
     @Transactional

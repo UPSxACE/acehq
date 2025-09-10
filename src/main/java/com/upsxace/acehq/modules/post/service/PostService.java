@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -83,5 +84,14 @@ public class PostService {
             return postMapper.toDtos(postRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc());
         }
         return postMapper.toDetailedDtos(postRepository.findAllByProfileIdAndDeletedAtIsNullOrderByCreatedAtDescWithDetails(userId));
+    }
+
+    public List<PostDto> getPopular(){
+        var userId = userService.getUserId().orElse(null);
+        var weekAgo = LocalDateTime.now().minus(Duration.ofDays(7));
+        if(userId == null){
+            return postMapper.toDtos(postRepository.findPopularPostsAfterDate(weekAgo));
+        }
+        return postMapper.toDetailedDtos(postRepository.findPopularPostsAfterDateWithDetails(userId, weekAgo));
     }
 }

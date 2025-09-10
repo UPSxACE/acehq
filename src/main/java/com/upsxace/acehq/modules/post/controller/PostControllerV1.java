@@ -68,4 +68,9 @@ public class PostControllerV1 {
     public ResponseEntity<List<PostDto>> getPosts(){
         return ResponseEntity.ok(postService.getAll());
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<PostDto>> getPopularPosts(){
+        return ResponseEntity.ok(postService.getPopular());
+    }
 }

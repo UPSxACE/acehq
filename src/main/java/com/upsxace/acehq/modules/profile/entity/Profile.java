@@ -1,9 +1,8 @@
 package com.upsxace.acehq.modules.profile.entity;
 
+import com.upsxace.acehq.modules.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Getter @Setter
 @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class Profile {
+public class Profile extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column
@@ -43,17 +42,6 @@ public class Profile {
     private String avatar;
 
     @Column
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @Column
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @Column
-    private LocalDateTime deletedAt;
-
-    @Column
     private LocalDateTime bannedAt;
 
     @Column
@@ -61,4 +49,9 @@ public class Profile {
 
     @Column
     private String bannedReason;
+
+    @PrePersist
+    public void defaults(){
+        if (name == null) name = "";
+    }
 }

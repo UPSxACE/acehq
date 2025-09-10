@@ -13,12 +13,12 @@ import com.upsxace.acehq.modules.profile.entity.ProfileType;
 import com.upsxace.acehq.modules.profile.entity.UserRole;
 import com.upsxace.acehq.modules.profile.mapper.ProfileMapper;
 import com.upsxace.acehq.modules.profile.repository.ProfileRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -46,6 +46,13 @@ public class UserService {
 
         var profile = profileRepository.findById(userCtx.getId()).orElseThrow(IllegalStateException::new);
         return Optional.of(new MeDto(userCtx.getId(), userCtx.getAuthoritiesString(), profileMapper.toDto(profile)));
+    }
+
+    public Optional<Profile> getUserProfile(){
+        var userCtx = getUserContext().orElse(null);
+        if (userCtx == null || userCtx.getId() == null) return Optional.empty();
+        var profile = profileRepository.findById(userCtx.getId()).orElseThrow(IllegalStateException::new);
+        return Optional.of(profile);
     }
 
     @Transactional
@@ -76,7 +83,7 @@ public class UserService {
 
         // request fields
         profile.setUsername(request.getUsername());
-        profile.setName(Optional.ofNullable(request.getName()).orElse(""));
+        profile.setName(request.getName());
         profile.setAvatar(request.getAvatar());
 
         // clerk fields that are not request fields

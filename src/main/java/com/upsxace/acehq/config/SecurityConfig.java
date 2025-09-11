@@ -25,8 +25,8 @@ import java.util.Collections;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Value("${app.frontend-host")
-    private String frontendHost;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     @Bean
     @Order(-1)
@@ -46,7 +46,7 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, ClerkAuthenticationFilter clerkAuthenticationFilter) throws Exception {
         http.cors(corsConfig -> corsConfig.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Collections.singletonList(frontendHost));
+            config.setAllowedOrigins(Collections.singletonList(frontendUrl));
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowCredentials(true);
             config.setAllowedHeaders(Collections.singletonList("*"));

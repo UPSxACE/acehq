@@ -6,7 +6,8 @@ CLERK_SECRET_KEY='{yourSecretKey}'
 CLERK_AUTHORIZED_PARTY='http://localhost:3000'
 CLERK_JWT_ENCODED='{yourJWKSPublicKeyEncoded}
 FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:8080
+FRONTEND_HOST=localhost:3000
+BACKEND_HOST=localhost:8080
 
 # Generate Long-lived Clerk JWT Token
 Run this in the frontend's console:

@@ -108,4 +108,22 @@ public class PostControllerV1 {
         postService.userDeleteCommentById(id, cid);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/comments/{cid}/like")
+    public ResponseEntity<Void> likePostComment(
+            @PathVariable UUID id,
+            @PathVariable UUID cid
+    ){
+        postService.userLikeComment(id, cid);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/comments/{cid}/unlike")
+    public ResponseEntity<Void> unlikePostComment(
+            @PathVariable UUID id,
+            @PathVariable UUID cid
+    ){
+        postService.userUnlikeComment(id, cid);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -7,10 +7,12 @@ import com.upsxace.acehq.modules.post.dto.CommentRequest;
 import com.upsxace.acehq.modules.post.dto.PostDto;
 import com.upsxace.acehq.modules.post.dto.PublishPostRequest;
 import com.upsxace.acehq.modules.post.entity.Comment;
+import com.upsxace.acehq.modules.post.entity.CommentLike;
 import com.upsxace.acehq.modules.post.entity.Post;
 import com.upsxace.acehq.modules.post.entity.PostLike;
 import com.upsxace.acehq.modules.post.mapper.CommentMapper;
 import com.upsxace.acehq.modules.post.mapper.PostMapper;
+import com.upsxace.acehq.modules.post.repository.CommentLikeRepository;
 import com.upsxace.acehq.modules.post.repository.CommentRepository;
 import com.upsxace.acehq.modules.post.repository.PostLikeRepository;
 import com.upsxace.acehq.modules.post.repository.PostRepository;
@@ -33,6 +35,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public PostDto publish(PublishPostRequest request){
@@ -123,11 +126,36 @@ public class PostService {
         return commentMapper.toDetailedDto(commentDetailed);
     }
 
+    @Transactional
     public void userDeleteCommentById(UUID postId, UUID commentId){
         var comment = commentRepository.findByPostIdAndIdAndPostDeletedAtIsNullAndDeletedAtIsNull(postId, commentId).orElseThrow(NotFoundException::new);
         var user = userService.getUserContext().orElseThrow(IllegalStateException::new);
         if(!comment.getProfile().getId().equals(user.getId()) && !user.isAdmin()) throw new ForbiddenException();
         comment.setDeletedAt(LocalDateTime.now());
         commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void userLikeComment(UUID postId, UUID commentId){
+        var comment = commentRepository.findByPostIdAndIdAndPostDeletedAtIsNullAndDeletedAtIsNullForUpdate(postId, commentId).orElseThrow(NotFoundException::new);
+        var userId = userService.getUserId().orElseThrow(IllegalStateException::new);
+        var commentLike = commentLikeRepository.findByPostIdCommentIdAndProfileIdForUpdate(comment.getPost().getId(), comment.getId(), userId);
+        if(commentLike.isEmpty()){
+            comment.setLikesCount(comment.getLikesCount() + 1);
+            commentRepository.save(comment);
+            commentLikeRepository.save(CommentLike.builder().comment(comment).profileId(userId).build());
+        }
+    }
+
+    @Transactional
+    public void userUnlikeComment(UUID postId, UUID commentId){
+        var comment = commentRepository.findByPostIdAndIdAndPostDeletedAtIsNullAndDeletedAtIsNullForUpdate(postId, commentId).orElseThrow(NotFoundException::new);
+        var userId = userService.getUserId().orElseThrow(IllegalStateException::new);
+        commentLikeRepository.findByPostIdCommentIdAndProfileIdForUpdate(comment.getPost().getId(), comment.getId(), userId)
+                .ifPresent(commentLike -> {
+                    comment.setLikesCount(comment.getLikesCount() - 1);
+                    commentRepository.save(comment);
+                    commentLikeRepository.delete(commentLike);
+                });
     }
 }

@@ -2,11 +2,16 @@ package com.upsxace.acehq.modules.post.service;
 
 import com.upsxace.acehq.config.error.ForbiddenException;
 import com.upsxace.acehq.config.error.NotFoundException;
+import com.upsxace.acehq.modules.post.dto.CommentDto;
+import com.upsxace.acehq.modules.post.dto.CommentRequest;
 import com.upsxace.acehq.modules.post.dto.PostDto;
 import com.upsxace.acehq.modules.post.dto.PublishPostRequest;
+import com.upsxace.acehq.modules.post.entity.Comment;
 import com.upsxace.acehq.modules.post.entity.Post;
 import com.upsxace.acehq.modules.post.entity.PostLike;
+import com.upsxace.acehq.modules.post.mapper.CommentMapper;
 import com.upsxace.acehq.modules.post.mapper.PostMapper;
+import com.upsxace.acehq.modules.post.repository.CommentRepository;
 import com.upsxace.acehq.modules.post.repository.PostLikeRepository;
 import com.upsxace.acehq.modules.post.repository.PostRepository;
 import com.upsxace.acehq.modules.profile.service.UserService;
@@ -26,6 +31,8 @@ public class PostService {
     private final UserService userService;
     private final PostMapper postMapper;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     @Transactional
     public PostDto publish(PublishPostRequest request){
@@ -67,7 +74,7 @@ public class PostService {
     }
 
     @Transactional
-    public void userDislikePost(UUID postId){
+    public void userUnlikePost(UUID postId){
         var post = postRepository.findByIdAndDeletedAtIsNullForUpdate(postId).orElseThrow(NotFoundException::new);
         var userId = userService.getUserId().orElseThrow(IllegalStateException::new);
         postLikeRepository.findByPostIdAndProfileIdForUpdate(post.getId(), userId)
@@ -93,5 +100,26 @@ public class PostService {
             return postMapper.toDtos(postRepository.findPopularPostsAfterDate(weekAgo));
         }
         return postMapper.toDetailedDtos(postRepository.findPopularPostsAfterDateWithDetails(userId, weekAgo));
+    }
+
+    @Transactional
+    public CommentDto userComment(CommentRequest request, UUID postId){
+        var post = postRepository.findByIdAndDeletedAtIsNullForUpdate(postId).orElseThrow(NotFoundException::new);
+        var profile = userService.getUserProfile().orElseThrow(IllegalStateException::new);
+        var comment = Comment.builder().text(request.getText()).profile(profile).post(post).build();
+        commentRepository.save(comment);
+        post.setCommentsCount(post.getCommentsCount() + 1);
+        postRepository.saveAndFlush(post);
+        return commentMapper.toDto(comment);
+    }
+
+    public CommentDto getCommentById(UUID postId, UUID commentId){
+        var userId = userService.getUserId().orElse(null);
+        if(userId == null) {
+            var comment = commentRepository.findByPostIdAndIdAndPostDeletedAtIsNullAndDeletedAtIsNull(postId, commentId).orElseThrow(NotFoundException::new);
+            return commentMapper.toDto(comment);
+        }
+        var commentDetailed = commentRepository.findByPostIdAndIdAndProfileIdAndPostDeletedAtIsNullAndDeletedAtIsNullWithDetails(postId, commentId, userId).orElseThrow(NotFoundException::new);
+        return commentMapper.toDetailedDto(commentDetailed);
     }
 }

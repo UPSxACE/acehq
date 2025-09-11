@@ -8,11 +8,11 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "comments")
 @Getter @Setter
 @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class Post extends AuditableEntity {
+public class Comment extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column
@@ -24,8 +24,9 @@ public class Post extends AuditableEntity {
     @Column
     private Long likesCount;
 
-    @Column
-    private Long commentsCount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @ManyToOne
     @JoinColumn(name = "profile_id")
@@ -34,6 +35,5 @@ public class Post extends AuditableEntity {
     @PrePersist
     public void defaults(){
         if (likesCount == null) likesCount = 0L;
-        if (commentsCount == null) commentsCount = 0L;
     }
 }

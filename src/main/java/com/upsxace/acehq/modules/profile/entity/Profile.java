@@ -1,6 +1,6 @@
 package com.upsxace.acehq.modules.profile.entity;
 
-import com.upsxace.acehq.modules.common.AuditableEntity;
+import com.upsxace.acehq.modules.core.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -65,6 +65,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/v1/profiles/complete-profile").authenticated()
                 .requestMatchers(HttpMethod.GET, "/v1/posts").permitAll()
                 .requestMatchers(HttpMethod.GET, "/v1/posts/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/posts/popular").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/posts/{id}/comments/{cid}").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
         );
 

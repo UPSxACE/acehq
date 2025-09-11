@@ -38,14 +38,14 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
             """)
     List<PostDetailed> findAllByProfileIdAndDeletedAtIsNullOrderByCreatedAtDescWithDetails(UUID profileId);
 
-    @Query("SELECT p FROM Post p WHERE p.createdAt > :date AND p.deletedAt IS NULL ORDER BY p.likesCount DESC")
+    @Query("SELECT p FROM Post p WHERE p.createdAt > :date AND p.deletedAt IS NULL ORDER BY (p.likesCount + p.commentsCount) DESC")
     List<Post> findPopularPostsAfterDate(LocalDateTime date);
 
     @Query("""
            SELECT new com.upsxace.acehq.modules.post.entity.PostDetailed(
                 p,
                 CASE WHEN (SELECT COUNT(pl) FROM PostLike pl WHERE pl.postId = p.id AND pl.profileId = :profileId) > 0 THEN TRUE ELSE FALSE END
-           ) FROM Post p WHERE p.createdAt > :date AND p.deletedAt IS NULL ORDER BY p.likesCount DESC
+           ) FROM Post p WHERE p.createdAt > :date AND p.deletedAt IS NULL ORDER BY (p.likesCount + p.commentsCount) DESC
            """)
     List<PostDetailed> findPopularPostsAfterDateWithDetails(UUID profileId, LocalDateTime date);
 }

@@ -1,4 +1,4 @@
-package com.upsxace.acehq.modules.common;
+package com.upsxace.acehq.modules.core;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

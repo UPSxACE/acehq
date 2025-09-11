@@ -1,5 +1,7 @@
 package com.upsxace.acehq.modules.post.controller;
 
+import com.upsxace.acehq.modules.post.dto.CommentDto;
+import com.upsxace.acehq.modules.post.dto.CommentRequest;
 import com.upsxace.acehq.modules.post.dto.PostDto;
 import com.upsxace.acehq.modules.post.dto.PublishPostRequest;
 import com.upsxace.acehq.modules.post.service.PostService;
@@ -56,11 +58,11 @@ public class PostControllerV1 {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/dislike")
-    public ResponseEntity<Void> dislikePost(
+    @PostMapping("/{id}/unlike")
+    public ResponseEntity<Void> unlikePost(
             @PathVariable UUID id
     ){
-        postService.userDislikePost(id);
+        postService.userUnlikePost(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -72,5 +74,29 @@ public class PostControllerV1 {
     @GetMapping("/popular")
     public ResponseEntity<List<PostDto>> getPopularPosts(){
         return ResponseEntity.ok(postService.getPopular());
+    }
+
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<CommentDto> commentPost(
+            @PathVariable UUID id,
+            @RequestBody @Valid CommentRequest request,
+            UriComponentsBuilder uriBuilder
+    ){
+        var comment = postService.userComment(request, id);
+
+        var uri = uriBuilder
+                .path("/{id}/comments/{cId}")
+                .buildAndExpand(id, comment.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(comment);
+    }
+
+    @GetMapping("/{id}/comments/{cid}")
+    public ResponseEntity<CommentDto> getPostComment(
+            @PathVariable UUID id,
+            @PathVariable UUID cid
+    ){
+        return ResponseEntity.ok(postService.getCommentById(id, cid));
     }
 }

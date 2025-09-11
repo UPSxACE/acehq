@@ -8,11 +8,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class PostDto {
+public class CommentDto {
     private final UUID id;
     private final String text;
     private final Integer likesCount;
-    private final Integer commentsCount;
     private final LocalDateTime createdAt;
     private final ProfileDto profile;
     // details

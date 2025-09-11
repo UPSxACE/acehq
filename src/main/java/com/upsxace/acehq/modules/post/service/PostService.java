@@ -122,4 +122,12 @@ public class PostService {
         var commentDetailed = commentRepository.findByPostIdAndIdAndProfileIdAndPostDeletedAtIsNullAndDeletedAtIsNullWithDetails(postId, commentId, userId).orElseThrow(NotFoundException::new);
         return commentMapper.toDetailedDto(commentDetailed);
     }
+
+    public void userDeleteCommentById(UUID postId, UUID commentId){
+        var comment = commentRepository.findByPostIdAndIdAndPostDeletedAtIsNullAndDeletedAtIsNull(postId, commentId).orElseThrow(NotFoundException::new);
+        var user = userService.getUserContext().orElseThrow(IllegalStateException::new);
+        if(!comment.getProfile().getId().equals(user.getId()) && !user.isAdmin()) throw new ForbiddenException();
+        comment.setDeletedAt(LocalDateTime.now());
+        commentRepository.save(comment);
+    }
 }

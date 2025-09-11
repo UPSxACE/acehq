@@ -99,4 +99,13 @@ public class PostControllerV1 {
     ){
         return ResponseEntity.ok(postService.getCommentById(id, cid));
     }
+
+    @DeleteMapping("/{id}/comments/{cid}")
+    public ResponseEntity<Void> deletePostComment(
+            @PathVariable UUID id,
+            @PathVariable UUID cid
+    ){
+        postService.userDeleteCommentById(id, cid);
+        return ResponseEntity.noContent().build();
+    }
 }

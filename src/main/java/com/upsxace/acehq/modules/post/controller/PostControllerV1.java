@@ -126,4 +126,11 @@ public class PostControllerV1 {
         postService.userUnlikeComment(id, cid);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<List<CommentDto>> getPostComments(
+            @PathVariable UUID id
+    ){
+        return ResponseEntity.ok(postService.getComments(id));
+    }
 }

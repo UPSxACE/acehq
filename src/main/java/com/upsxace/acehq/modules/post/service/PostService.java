@@ -158,4 +158,12 @@ public class PostService {
                     commentLikeRepository.delete(commentLike);
                 });
     }
+
+    public List<CommentDto> getComments(UUID postId){
+        var userId = userService.getUserId().orElse(null);
+        if(userId == null){
+            return commentMapper.toDtos(commentRepository.findAllByPostIdAndPostDeletedAtIsNullAndDeletedAtIsNullOrderByCreatedAtDesc(postId));
+        }
+        return commentMapper.toDetailedDtos(commentRepository.findAllByPostIdAndProfileIdAndPostDeletedAtIsNullAndDeletedAtIsNullOrderByCreatedAtDesc(postId, userId));
+    }
 }
